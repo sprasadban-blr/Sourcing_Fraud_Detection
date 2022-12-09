@@ -19,7 +19,7 @@
         - pip install st_aggrid
 
   * **Clone github**
-    - $SRC_DIR>*git clone https://github.com/sprasadban/Sourcing_Fraud_Detection*
+    - $SRC_DIR>*git clone https://github.com/sprasadban-blr/Sourcing_Fraud_Detection*
 
 ### Run supplier recommendation dashboard application 
   ***$SRC_DIR>streamlit run FraudDetectionDashboard.py***
