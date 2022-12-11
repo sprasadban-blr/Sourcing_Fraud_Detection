@@ -3,6 +3,7 @@ import altair as alt
 import pandas as pd
 from PIL import Image
 from st_aggrid import GridOptionsBuilder, AgGrid, GridUpdateMode, DataReturnMode
+import FraudClassification as fraudclf
 
 # https://discuss.streamlit.io/t/streamlit-restful-app/409/2
 # https://stackoverflow.com/questions/68273958/how-would-i-get-my-streamlit-application-to-use-a-flask-api-in-order-to-retrieve
@@ -20,6 +21,7 @@ def load_data():
     eventRfxItemSummary =  pd.read_csv('./input/Event_RfxItemSummary.csv')
     classificationEventsData = pd.read_csv('./output/classification_awarded_events_data.csv')
     modelMetrics =  pd.read_csv('./output/modelMetrics.csv')
+    modelMetrics = modelMetrics[['Algorithm','Training Accuracy','UpSampling Training Accuracy']]
     clusteredEventsData = pd.read_csv('./output/clustered_events_data.csv')
     return (eventData, eventParticipation, eventSummary, eventSupplierParticipation, eventRfxItemSummary, classificationEventsData, clusteredEventsData, modelMetrics)
 
@@ -50,17 +52,71 @@ def visualize_outliers(clusteredEventsData):
     st.subheader("Selected Events")
     selectedEventsDf = pd.DataFrame(sel_row)
     
+    
     if not selectedEventsDf.empty:
         selectedEventsDf = selectedEventsDf.drop(['_selectedRowNodeInfo'], axis=1)
         st.write(selectedEventsDf)
         
-        if st.button('Re-Train Model'):
-            st.write("Model retraining...")
+    if st.button('Re-Train Model'):
+        st.write("Model retraining in progress...")
+        fraudclf.retrainModel(selectedEventsDf)
+        st.write("Retraining completed.")
+            
 
+def visualize_classification(classificationEventsData, modelMetrics, input, input1):
+    st.write(classificationEventsData)
+    st.header("Prediction Model Metrics")
+    st.write(modelMetrics)
+    
+    inputDf = pd.DataFrame(input1, columns=['EventParticipation_Bidder_UserId',
+                                'EventParticipation_SupplierId', 
+                                'EventParticipation_SupplierCity',
+                                'EventParticipation_SupplierState',
+                                'EventParticipation_SupplierCountry',	
+                                'EventParticipation_AwardedFlag',	
+                                'EventSummary_InvitedSuppliers',	
+                                'EventSummary_ParticipSuppliers',
+                                'EventSummary_ParticipationRate'])
+    eventData1 = pd.read_csv('./output/classification_awarded_events_data.csv')
+    eventDocDf = eventData1.query('EventId == "Doc7001940"')
+    # Data having same address
+    st.header("New incoming event..")
+    st.write(eventDocDf)
+    st.write("Predict event")
+    st.write(inputDf)
+    if st.button('Predict'):
+        label = fraudclf.inference(inputDf)[0]
+        if(label == 0):
+            st.markdown("The given event details are classified as **'Non-Fraud'**")
+        else:
+            st.markdown("The given event details are classified as **'Fraud'**")
+            st.markdown("**Supplier with same address.**")
+    
+def visualize_reclassification(input):
+    inputDf = pd.DataFrame(input, columns=['EventParticipation_Bidder_UserId',
+                                'EventParticipation_SupplierId', 
+                                'EventParticipation_SupplierCity',
+                                'EventParticipation_SupplierState',
+                                'EventParticipation_SupplierCountry',	
+                                'EventParticipation_AwardedFlag',	
+                                'EventSummary_InvitedSuppliers',	
+                                'EventSummary_ParticipSuppliers',
+                                'EventSummary_ParticipationRate'])
+    st.header("New incoming event..")
+    st.write(inputDf)
+    label = fraudclf.inference(inputDf)[0]
+    if st.button('Predict'):
+        label = fraudclf.inference(inputDf)[0]
+        if(label == 0):
+            st.markdown("The given event details are classified as **'Non-Fraud'**")
+        else:
+            st.markdown("The given event details are classified as **'Fraud'**")
+            st.markdown("**Supplier with low participation rate.**")
+    
 def main(eventData, eventParticipation, eventSummary, eventSupplierParticipation, eventRfxItemSummary, classificationEventsData, clusteredEventsData, modelMetrics):
     
     page = st.sidebar.radio("Choose a page", ("Event Data", "Event Participation", "Event Summary", "Event Supplier Participation", 
-                                                  "Event Item Summary", "Classification View", "Outliers View"))
+                                                  "Event Item Summary", "Classification View", "Outliers View",  "ReClassification View"))
     if page == "Event Data":
         st.header("About Event Data.")
         st.write("Please select a page on the left.")
@@ -79,11 +135,14 @@ def main(eventData, eventParticipation, eventSummary, eventSupplierParticipation
         st.write(eventRfxItemSummary)
     elif page == "Classification View":
         st.header("Classification View")
-        st.write(classificationEventsData)
-        st.header("Prediction Model Metrics")
-        st.write(modelMetrics)
+        input = [['dstaley', 'sid503', 'San Jose', 'CA', 'US', True, 26, 2, 7.6900]]
+        input1 = [['Tom milton', 'ACM_44106', 'Bangalore', 'Karnataka', 'IN', True, 68.0000, 2.0000, 2.9400]]
+        visualize_classification(classificationEventsData, modelMetrics, input, input1)
     elif page == "Outliers View":
         visualize_outliers(clusteredEventsData)
+    elif page == "ReClassification View":
+        input = [['dstaley', 'sid503', 'San Jose', 'CA', 'US', True, 26, 2, 7.6900]]
+        visualize_reclassification(input)
                 
 #Load data and create ML model
 data = load_data()

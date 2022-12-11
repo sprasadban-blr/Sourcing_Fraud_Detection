@@ -124,8 +124,8 @@ def persistModelPerformanceMetrics():
         row = row + 1
     modelP4Metrics.to_csv('./output/modelMetrics.csv', mode='w', header=True, encoding='utf-8', index=False)
     print("Model metrics file saved succesfully...")
-    
-def inference(inputDf):
+
+def getModelDictionaries():
     biddersMapFile = open('./output/bidders_map.dict', 'rb')
     biddersKey = pickle.load(biddersMapFile)
     biddersMapFile.close()
@@ -145,6 +145,15 @@ def inference(inputDf):
     supplierCountryMapFile = open('./output/supplier_country_map.dict', 'rb')
     supplierCountryKey = pickle.load(supplierCountryMapFile)
     supplierCountryMapFile.close()
+    return (biddersKey, suppliersIdKey, supplierCitiesKey, supplierStatesKey, supplierCountryKey)
+        
+def inference(inputDf):
+    dict = getModelDictionaries()
+    biddersKey = dict[0]
+    suppliersIdKey = dict[1]
+    supplierCitiesKey = dict[2]
+    supplierStatesKey = dict[3]
+    supplierCountryKey = dict[4]
     
     bidder = biddersKey[inputDf['EventParticipation_Bidder_UserId'][0]]
     supplier = suppliersIdKey[inputDf['EventParticipation_SupplierId'][0]]
@@ -164,13 +173,28 @@ def inference(inputDf):
     y_new_sample_pred = model.predict(newModSample)
     return y_new_sample_pred
 
-def retrain():
-    print("Work in progress...")
-            
-
-def main():
+def retrainModel(selectedEvents):
     data = load()
-    awardedEvents = preprocess(data[0], data[1])
+    classificationData = data[0]
+    clusterdEventsData = data[1]
+    
+    # Update selected events as fraud
+    for index, eventRow in selectedEvents.iterrows():
+        eventData = classificationData.query('EventId == "' +eventRow['EventId']+ '"')
+        # Update label as fraud
+        for row in eventData.index:
+            classificationData.at[row, 'fraud'] = 1
+    
+    # Uodate the CSV file with new set of fraud entries
+    #classificationData.to_csv('./output/classification_events_data.csv', mode='w', header=True, encoding='utf-8', index=False)
+    #print('Classification data created succesfully..')
+    
+    # Retrain model
+    trainModel(classificationData, clusterdEventsData)
+    
+            
+def trainModel(classificationData, clusterdEventsData):
+    awardedEvents = preprocess(classificationData, clusterdEventsData)
     
     # Encode bidders id
     results = encodeData(awardedEvents, 'EventParticipation_Bidder_UserId', 11)
@@ -233,8 +257,10 @@ def main():
         pickle.dump(supplierCountryKey, fileHandle, protocol=pickle.HIGHEST_PROTOCOL)
         
     with open('./output/selected_ai_ml_model.mdl', 'wb') as fileHandle:
-        pickle.dump(model, fileHandle, protocol=pickle.HIGHEST_PROTOCOL)
-    
+        pickle.dump(model, fileHandle, protocol=pickle.HIGHEST_PROTOCOL)    
+
+def inferenceTest():
+    # Inference test
     input = [['pseudotaggeds1', 'sid800', 'Chiyoda-ku', 'Tokyo', 'JP', True, 6.0, 6.0, 100.00]]
     inputDf = pd.DataFrame(input, columns=['EventParticipation_Bidder_UserId',
                                  'EventParticipation_SupplierId', 
@@ -246,8 +272,17 @@ def main():
                                  'EventSummary_ParticipSuppliers',
                                  'EventSummary_ParticipationRate'])
     print(inputDf)
-    print("Inference = "+ str(inference(inputDf)))
-
+    label = inference(inputDf)[0]
+    if(label ==0):
+         print("Inference = Non-Fraud")
+    else:
+        print("Inference = Fraud")
+        
+    
+def main():
+    data = load()
+    trainModel(data[0], data[1])
+    inferenceTest()
 
 main()
     
