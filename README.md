@@ -1,10 +1,10 @@
 # Fraud in sourcing, Finding anamolies during event awarding
 
-**POC to check concept on doing fraud detection in sourcing using classification and clustering techniques**
+**POC to check concept of doing fraud detection in sourcing using classification and clustering techniques**
 
 ### Highlights:
-  * Fraud detection of labelled data containing suppliers having same address are trying to bid/already awarded an event - Build an classification model
-  * Anamolies detection to find an events containing supplier's with low participation rates - Build an clustering model
+  * Fraud detection of labelled data containing suppliers having same address are trying to bid/getting awarded an event - **Build an classification model**
+  * Anamolies detection to find an events containing supplier's with low participation rates - **Build an clustering model**
   * UI to Auditor for tagging anamolies/fradulent events for retraining the model
   * Support realtime/near realtime events to classify events are fraud/non-fraud
 
@@ -25,7 +25,7 @@
     - $SRC_DIR>*git clone https://github.com/sprasadban-blr/Sourcing_Fraud_Detection*
 
 * **Steps to extract Events data from reporting system**
-    - Download Event, EventParticipation, EventSummary, SupplierParticipation, RfxEventSummary data from sourcing reporting DB (as CSV files from Inspector tool)
+    - Download **Event, EventParticipation, EventSummary, SupplierParticipation, RfxEventSummary** data from sourcing reporting DB (as CSV files from Inspector tool)
       * Persist the CSV files in *'./input/Event.csv'*, *'./input/EventParticipation.csv'*, *'./input/EventSummary.csv'*, *'./input/Event_SupplierParticipation.csv'* and *'./input/Event_RfxItemSummary.csv'*
       * Queries used to download the data can be referred from *'query.sql'* file
     - Parse the above CSV using *'EventsDataPreparation.py'* to create data required for the PoC
