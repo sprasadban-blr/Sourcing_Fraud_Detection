@@ -25,7 +25,13 @@ def load_data():
     clusteredEventsData = pd.read_csv('./output/clustered_events_data.csv')
     return (eventData, eventParticipation, eventSummary, eventSupplierParticipation, eventRfxItemSummary, classificationEventsData, clusteredEventsData, modelMetrics)
 
+def visualize_design():
+    st.header("Fraud Detection Design")
+    image = Image.open('./output/fraud_detection_steps.png')
+    st.image(image, caption='High level design')
+    
 def visualize_outliers(clusteredEventsData):
+    visualize_design()
     st.header("Preprocessed Non-Labelled Data")
     st.write(clusteredEventsData)
     
@@ -66,11 +72,7 @@ def visualize_outliers(clusteredEventsData):
             
 
 def visualize_classification(classificationEventsData, modelMetrics, input, input1):
-    
-    st.header("Fraud Detection Design")
-    image = Image.open('./output/fraud_detection_steps.png')
-    st.image(image, caption='High level design')
-    
+    visualize_design()
     st.header("Preprocessed Labelled Data")
     st.write(classificationEventsData)
     
@@ -102,6 +104,7 @@ def visualize_classification(classificationEventsData, modelMetrics, input, inpu
             st.markdown("**Supplier with same address.**")
     
 def visualize_reclassification(input):
+    visualize_design()
     inputDf = pd.DataFrame(input, columns=['EventParticipation_Bidder_UserId',
                                 'EventParticipation_SupplierId', 
                                 'EventParticipation_SupplierCity',
