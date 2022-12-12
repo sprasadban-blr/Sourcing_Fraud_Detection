@@ -43,7 +43,7 @@
 	- Choose by running *'FraudClustering.py'* to select the best algorithm for our data using **K-Means and K_Prototype** algorithm.. This will create a file in *'./output/clustered_events_lables.csv and ./output/low_participation_clusters.png* containing events clustered groups.
 	- **Note:** For now we have considered 2 clusters (Fraud Vs Non-Fraud) based on Elbow/Silhouette score technique.
 
-### Run supplier recommendation dashboard application 
+### Run fraud detection dashboard application 
   ***$SRC_DIR>streamlit run FraudDetectionDashboard.py***
 
 ### Run UI application
