@@ -5,8 +5,8 @@
 ### Highlights:
   * Fraud detection of labelled data containing suppliers having same address are trying to bid/getting awarded an event - **Build an classification model**
   * Anamolies detection to find an events containing supplier's with low participation rates - **Build an clustering model**
-  * UI to Auditor for tagging anamolies/fradulent events for retraining the model
-  * Support realtime/near realtime events to classify events are fraud/non-fraud
+  * UI to Auditor for **tagging anamolies/fradulent events for retraining** the model
+  * Support **realtime/near realtime** events to classify events are fraud/non-fraud
 
 ### Prerequisite:
   * **Install Python 3.6 *https://www.python.org/downloads/release/python-368/*** 
