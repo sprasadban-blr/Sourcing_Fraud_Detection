@@ -26,8 +26,10 @@ def load_data():
     return (eventData, eventParticipation, eventSummary, eventSupplierParticipation, eventRfxItemSummary, classificationEventsData, clusteredEventsData, modelMetrics)
 
 def visualize_outliers(clusteredEventsData):
-    st.title("Outliers View")
+    st.header("Preprocessed Non-Labelled Data")
     st.write(clusteredEventsData)
+    
+    st.header('Low Participation Clusters Using K-Prototype/K-Means')
     image = Image.open('./output/low_participation_clusters.png')
     st.image(image, caption='Low Participation Clusters')
     clusterNo = st.radio("Choose cluster to analyze", (0, 1))
@@ -64,7 +66,14 @@ def visualize_outliers(clusteredEventsData):
             
 
 def visualize_classification(classificationEventsData, modelMetrics, input, input1):
+    
+    st.header("Fraud Detection Design")
+    image = Image.open('./output/fraud_detection_steps.png')
+    st.image(image, caption='High level design')
+    
+    st.header("Preprocessed Labelled Data")
     st.write(classificationEventsData)
+    
     st.header("Prediction Model Metrics")
     st.write(modelMetrics)
     
@@ -80,9 +89,9 @@ def visualize_classification(classificationEventsData, modelMetrics, input, inpu
     eventData1 = pd.read_csv('./output/classification_awarded_events_data.csv')
     eventDocDf = eventData1.query('EventId == "Doc7001940"')
     # Data having same address
-    st.header("New incoming event..")
+    st.header("New Incoming Event..")
     st.write(eventDocDf)
-    st.write("Predict event")
+    st.header("Predict event")
     st.write(inputDf)
     if st.button('Predict'):
         label = fraudclf.inference(inputDf)[0]
@@ -102,7 +111,7 @@ def visualize_reclassification(input):
                                 'EventSummary_InvitedSuppliers',	
                                 'EventSummary_ParticipSuppliers',
                                 'EventSummary_ParticipationRate'])
-    st.header("New incoming event..")
+    st.header("New Incoming Event..")
     st.write(inputDf)
     label = fraudclf.inference(inputDf)[0]
     if st.button('Predict'):
@@ -115,16 +124,20 @@ def visualize_reclassification(input):
     
 def main(eventData, eventParticipation, eventSummary, eventSupplierParticipation, eventRfxItemSummary, classificationEventsData, clusteredEventsData, modelMetrics):
     
-    page = st.sidebar.radio("Choose a page", ("Event Data", "Event Participation", "Event Summary", "Event Supplier Participation", 
+    page = st.sidebar.radio("Choose a page", ("Fraud Detection Design", "Event Data", "Event Participation", "Event Summary", "Event Supplier Participation", 
                                                   "Event Item Summary", "Classification View", "Outliers View",  "ReClassification View"))
-    if page == "Event Data":
+    if page == "Fraud Detection Design":
+        st.header("Fraud Detection Design")
+        image = Image.open('./output/fraud_detection_steps.png')
+        st.image(image, caption='High level design')
+    elif page == "Event Data":
         st.header("About Event Data.")
         st.write("Please select a page on the left.")
         st.write(eventData) 
-    if page == "Event Participation":
+    elif page == "Event Participation":
         st.header("About Event Participation Data.")
         st.write(eventParticipation)
-    if page == "Event Summary":
+    elif page == "Event Summary":
         st.header("About Event Summary Data")
         st.write(eventSummary)
     elif page == "Event Supplier Participation":
@@ -134,7 +147,6 @@ def main(eventData, eventParticipation, eventSummary, eventSupplierParticipation
         st.header("About Event Item Summary Data")
         st.write(eventRfxItemSummary)
     elif page == "Classification View":
-        st.header("Classification View")
         input = [['dstaley', 'sid503', 'San Jose', 'CA', 'US', True, 26, 2, 7.6900]]
         input1 = [['Tom milton', 'ACM_44106', 'Bangalore', 'Karnataka', 'IN', True, 68.0000, 2.0000, 2.9400]]
         visualize_classification(classificationEventsData, modelMetrics, input, input1)
