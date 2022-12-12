@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from imblearn.over_sampling import SMOTE
 import pickle
@@ -53,7 +55,59 @@ def preprocess(classificationData, clusterdEventsData):
         awardedEvents.at[index, 'EventSummary_ParticipSuppliers'] = 6
         awardedEvents.at[index, 'EventSummary_ParticipationRate'] = 100.00
     
+    # Persist without encoding
     awardedEvents.to_csv('./output/classification_awarded_events_data.csv', mode='w', header=True, encoding='utf-8', index=False)
+    
+    # Encode bidders id
+    results = encodeData(awardedEvents, 'EventParticipation_Bidder_UserId', 11)
+    awardedEvents = results[0]
+    biddersKey = results[1]
+    biddersReverseKey = results[2]
+    with open('./output/bidders_map.dict', 'wb') as fileHandle:
+        pickle.dump(biddersKey, fileHandle, protocol=pickle.HIGHEST_PROTOCOL)
+    
+    # Encode supplier id
+    results = encodeData(awardedEvents, 'EventParticipation_SupplierId', 101)
+    awardedEvents = results[0]
+    suppliersIdKey = results[1]
+    suppliersReverseIdKey = results[2]
+    with open('./output/supplier_ids_map.dict', 'wb') as fileHandle:
+        pickle.dump(suppliersIdKey, fileHandle, protocol=pickle.HIGHEST_PROTOCOL)
+    
+    # Encode supplier city
+    results = encodeData(awardedEvents, 'EventParticipation_SupplierCity', 201)
+    awardedEvents = results[0]
+    supplierCitiesKey = results[1]
+    supplierCitiesReverseKey = results[2]
+    with open('./output/supplier_city_map.dict', 'wb') as fileHandle:
+        pickle.dump(supplierCitiesKey, fileHandle, protocol=pickle.HIGHEST_PROTOCOL)
+    
+    # Encode supplier state
+    results = encodeData(awardedEvents, 'EventParticipation_SupplierState', 301) 
+    awardedEvents = results[0]
+    supplierStatesKey = results[1]
+    supplierStatesReverseKey = results[2]
+    with open('./output/supplier_state_map.dict', 'wb') as fileHandle:
+        pickle.dump(supplierStatesKey, fileHandle, protocol=pickle.HIGHEST_PROTOCOL)
+    
+     # Encode supplier country
+    results = encodeData(awardedEvents, 'EventParticipation_SupplierCountry', 401)
+    awardedEvents = results[0]
+    supplierCountryKey = results[1]
+    supplierCountryReverseKey = results[2]
+    with open('./output/supplier_country_map.dict', 'wb') as fileHandle:
+        pickle.dump(supplierCountryKey, fileHandle, protocol=pickle.HIGHEST_PROTOCOL)
+    
+    '''
+    awarded = awardedEvents.query('EventParticipation_AwardedFlag == True')
+    for index in awarded.index:
+        awardedEvents.at[index, 'EventParticipation_AwardedFlag'] = 1
+    
+    nonAwarded = awardedEvents.query('EventParticipation_AwardedFlag == False')
+    for index in nonAwarded.index:
+        awardedEvents.at[index, 'EventParticipation_AwardedFlag'] = 0
+    '''
+    
     return awardedEvents
 
 def updateUniqueKey(awardedEvents, colName, updateRows, startKeyIndex):
@@ -95,21 +149,97 @@ def randomForest(X, y, X_train, X_test, y_train, y_test, X_resampled, y_resample
     # Accuracy for training events
     y_train_pred = model.predict(X_train)
     trainingAccuracy = round(accuracy_score(y_train, y_train_pred) * 100, 2)
-    print("Accuracy of training data = "+ str(trainingAccuracy))
+    print("Accuracy of training data (RandomForest) = "+ str(trainingAccuracy))
     
     # Accuracy for resampled training events
     y_resampled_train_pred = model.predict(X_resampled)
     trainingUpSamplingAccuracy = round(accuracy_score(y_resampled, y_resampled_train_pred) * 100, 2)
-    print("Accuracy of resampled training data = "+ str(trainingUpSamplingAccuracy))
+    print("Accuracy of upsampled training data (RandomForest) = "+ str(trainingUpSamplingAccuracy))
     
     # Accuracy for test events
     y_test_pred = model.predict(X_test)
     testAccuracy = round(accuracy_score(y_test, y_test_pred) * 100, 2)
-    print("Accuracy of test data = "+ str(testAccuracy))
+    print("Accuracy of test data (RandomForest) = "+ str(testAccuracy))
     
-    algoMap["RandomForest"] = (trainingAccuracy, trainingUpSamplingAccuracy, testAccuracy)
+    algoMap["RandomForest"] = (trainingAccuracy, trainingUpSamplingAccuracy, testAccuracy, model)
     
     return model
+
+def KNN(X, y, X_train, X_test, y_train, y_test, X_resampled, y_resampled):
+    #Create KNN Classifier
+    model = KNeighborsClassifier()
+
+    #Train the model using the training sets
+    model.fit(X_train, y_train)
+    
+    # Accuracy for training events
+    y_train_pred = model.predict(X_train)
+    trainingAccuracy = round(accuracy_score(y_train, y_train_pred) * 100, 2)
+    print("Accuracy of training data (KNN) = "+ str(trainingAccuracy))
+    
+    # Accuracy for resampled training events
+    y_resampled_train_pred = model.predict(X_resampled)
+    trainingUpSamplingAccuracy = round(accuracy_score(y_resampled, y_resampled_train_pred) * 100, 2)
+    print("Accuracy of upsampled training data (KNN) = "+ str(trainingUpSamplingAccuracy))
+    
+    # Accuracy for test events
+    y_test_pred = model.predict(X_test)
+    testAccuracy = round(accuracy_score(y_test, y_test_pred) * 100, 2)
+    print("Accuracy of test data = (KNN) = "+ str(testAccuracy))
+    
+    algoMap["KNN"] = (trainingAccuracy, trainingUpSamplingAccuracy, testAccuracy, model)
+    
+    return model
+
+def logisticRegression(X, y, X_train, X_test, y_train, y_test, X_resampled, y_resampled):
+    # Create LinearRegression classifier
+    model = LogisticRegression()
+    model.fit(X_train, y_train)
+    
+    # Accuracy for training events
+    y_train_pred = model.predict(X_train)
+    trainingAccuracy = round(accuracy_score(y_train, y_train_pred) * 100, 2)
+    print("Accuracy of training data (Logistic Regression) = "+ str(trainingAccuracy))
+    
+    # Accuracy for resampled training events
+    y_resampled_train_pred = model.predict(X_resampled)
+    trainingUpSamplingAccuracy = round(accuracy_score(y_resampled, y_resampled_train_pred) * 100, 2)
+    print("Accuracy of upsampled training data (Logistic Regression) = "+ str(trainingUpSamplingAccuracy))
+    
+    # Accuracy for test events
+    y_test_pred = model.predict(X_test)
+    testAccuracy = round(accuracy_score(y_test, y_test_pred) * 100, 2)
+    print("Accuracy of test data = (Logistic Regression) = "+ str(testAccuracy))
+    
+    algoMap["Logistic Regression"] = (trainingAccuracy, trainingUpSamplingAccuracy, testAccuracy, model)
+    
+    return model
+
+def printModelMetrics():
+    print("---------------------------------------------------------------------------------------")
+    print("Model Metrics...")
+    for key in algoMap:
+        print(key + " = Training Accuracy(" + str(algoMap[key][0]) + "), Upsampling Training Accuracy(" + str(algoMap[key][1]) + ")")
+    print("---------------------------------------------------------------------------------------")
+    
+def compareAndStoreModel():
+    upsamplingAccuracy = -9999
+    selectedAlgo = ""
+    selectedModel = None
+    for key in algoMap:
+        algoTripple = algoMap[key]
+        algoUpsamplingAccuracy = algoTripple[1]
+        if(upsamplingAccuracy < algoUpsamplingAccuracy):
+            upsamplingAccuracy = algoUpsamplingAccuracy
+            selectedAlgo = key
+            selectedModel = algoTripple[3]
+    
+     # Required for inference
+    with open('./output/selected_ai_ml_model.mdl', 'wb') as fileHandle:
+        pickle.dump(selectedModel, fileHandle, protocol=pickle.HIGHEST_PROTOCOL)
+        
+    print("Best algorithm selected = " +selectedAlgo) 
+
 
 def persistModelPerformanceMetrics():
     # Persist model metrics and selection for UI
@@ -190,42 +320,11 @@ def retrainModel(selectedEvents):
     #print('Classification data created succesfully..')
     
     # Retrain model
-    trainModel(classificationData, clusterdEventsData)
+    trainModel(classificationData, clusterdEventsData, False)
     
             
-def trainModel(classificationData, clusterdEventsData):
+def trainModel(classificationData, clusterdEventsData, trailMode):
     awardedEvents = preprocess(classificationData, clusterdEventsData)
-    
-    # Encode bidders id
-    results = encodeData(awardedEvents, 'EventParticipation_Bidder_UserId', 11)
-    awardedEvents = results[0]
-    biddersKey = results[1]
-    biddersReverseKey = results[2]
-    
-    # Encode supplier id
-    results = encodeData(awardedEvents, 'EventParticipation_SupplierId', 101)
-    awardedEvents = results[0]
-    suppliersIdKey = results[1]
-    suppliersReverseIdKey = results[2]
-    
-    # Encode supplier city
-    results = encodeData(awardedEvents, 'EventParticipation_SupplierCity', 201)
-    awardedEvents = results[0]
-    supplierCitiesKey = results[1]
-    supplierCitiesReverseKey = results[2]
-    
-    # Encode supplier state
-    results = encodeData(awardedEvents, 'EventParticipation_SupplierState', 301) 
-    awardedEvents = results[0]
-    supplierStatesKey = results[1]
-    supplierStatesReverseKey = results[2]
-    
-     # Encode supplier country
-    results = encodeData(awardedEvents, 'EventParticipation_SupplierCountry', 401)
-    awardedEvents = results[0]
-    supplierCountryKey = results[1]
-    supplierCountryReverseKey = results[2]
-    
     balData = balanceData(awardedEvents)
     
     X = balData[0]
@@ -237,27 +336,21 @@ def trainModel(classificationData, clusterdEventsData):
     X_resampled = balData[6]
     y_resampled = balData[7]
     
-    model = randomForest(X, y, X_train, X_test, y_train, y_test, X_resampled, y_resampled)
-    
-    # Required during inference stage
-    persistModelPerformanceMetrics()
-    with open('./output/bidders_map.dict', 'wb') as fileHandle:
-        pickle.dump(biddersKey, fileHandle, protocol=pickle.HIGHEST_PROTOCOL)
-    
-    with open('./output/supplier_ids_map.dict', 'wb') as fileHandle:
-        pickle.dump(suppliersIdKey, fileHandle, protocol=pickle.HIGHEST_PROTOCOL)
-    
-    with open('./output/supplier_city_map.dict', 'wb') as fileHandle:
-        pickle.dump(supplierCitiesKey, fileHandle, protocol=pickle.HIGHEST_PROTOCOL)
-    
-    with open('./output/supplier_state_map.dict', 'wb') as fileHandle:
-        pickle.dump(supplierStatesKey, fileHandle, protocol=pickle.HIGHEST_PROTOCOL)
-    
-    with open('./output/supplier_country_map.dict', 'wb') as fileHandle:
-        pickle.dump(supplierCountryKey, fileHandle, protocol=pickle.HIGHEST_PROTOCOL)
-        
-    with open('./output/selected_ai_ml_model.mdl', 'wb') as fileHandle:
-        pickle.dump(model, fileHandle, protocol=pickle.HIGHEST_PROTOCOL)    
+    # Compare algos only for first time and during retrain run best algo
+    if(trailMode):
+        logisticRegression(X, y, X_train, X_test, y_train, y_test, X_resampled, y_resampled)
+        KNN(X, y, X_train, X_test, y_train, y_test, X_resampled, y_resampled)
+        randomForest(X, y, X_train, X_test, y_train, y_test, X_resampled, y_resampled)
+        # Required during inference stage
+        persistModelPerformanceMetrics()
+        compareAndStoreModel()
+        printModelMetrics()
+    else:
+        # During retrain run best model
+        model = randomForest(X, y, X_train, X_test, y_train, y_test, X_resampled, y_resampled)
+        with open('./output/selected_ai_ml_model.mdl', 'wb') as fileHandle:
+            pickle.dump(model, fileHandle, protocol=pickle.HIGHEST_PROTOCOL) 
+       
 
 def inferenceTest():
     # Inference test
@@ -281,7 +374,7 @@ def inferenceTest():
     
 def main():
     data = load()
-    trainModel(data[0], data[1])
+    trainModel(data[0], data[1], True)
     inferenceTest()
 
 main()
