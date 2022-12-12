@@ -1,2 +1,4 @@
 Algorithm,Training Accuracy,UpSampling Training Accuracy,Test Accuracy
+Logistic Regression,98.7,71.17,71.17
+KNN,97.73,59.33,59.33
 RandomForest,99.03,99.5,99.5

@@ -52,7 +52,7 @@ Doc6755779,ptaylor,sid516,Santa Clara,CA,US,True,0,6.0,6.0,100.0
 Doc6755460,ptaylor,sid516,Santa Clara,CA,US,True,0,6.0,6.0,100.0
 Doc6755779,mwxiao,sid808,Guangzhou,Guangdong,CN,True,0,6.0,6.0,100.0
 Doc6755477,ptaylor,sid516,Santa Clara,CA,US,True,0,6.0,6.0,100.0
-Doc6744368,tphillips,sid501,Boston,MA,US,True,0,18.0,3.0,16.67
+Doc6744368,tphillips,sid501,Boston,MA,US,True,1,18.0,3.0,16.67
 Doc6755728,ptaylor,sid516,Santa Clara,CA,US,True,0,6.0,6.0,100.0
 Doc6755460,zwwu,sid809,Dongguan,Guangdong,CN,True,0,6.0,6.0,100.0
 Doc6755728,mwxiao,sid808,Guangzhou,Guangdong,CN,True,0,6.0,6.0,100.0
@@ -362,21 +362,21 @@ Doc6759443,pseudotaggeds1,sid800,Chiyoda-ku,Tokyo,JP,True,0,6.0,6.0,100.0
 Doc6759426,mwxiao,sid808,Guangzhou,Guangdong,CN,True,0,6.0,6.0,100.0
 Doc6759426,pseudotaggeds1,sid800,Chiyoda-ku,Tokyo,JP,True,0,6.0,6.0,100.0
 Doc6759426,zwwu,sid809,Dongguan,Guangdong,CN,True,0,6.0,6.0,100.0
-Doc6762337,dstaley,sid503,San Jose,CA,US,True,0,26.0,2.0,7.69
+Doc6762337,dstaley,sid503,San Jose,CA,US,True,1,26.0,2.0,7.69
 Doc6759460,zwwu,sid809,Dongguan,Guangdong,CN,True,0,6.0,6.0,100.0
 Doc6759460,ptaylor,sid516,Santa Clara,CA,US,True,0,6.0,6.0,100.0
 Doc6759460,mwxiao,sid808,Guangzhou,Guangdong,CN,True,0,6.0,6.0,100.0
 Doc6759443,zwwu,sid809,Dongguan,Guangdong,CN,True,0,6.0,6.0,100.0
 Doc6759443,ptaylor,sid516,Santa Clara,CA,US,True,0,6.0,6.0,100.0
 Doc6759460,pseudotaggeds1,sid800,Chiyoda-ku,Tokyo,JP,True,0,6.0,6.0,100.0
-Doc6853094,dstaley,sid503,San Jose,CA,US,True,0,33.0,2.0,6.06
+Doc6853094,dstaley,sid503,San Jose,CA,US,True,1,33.0,2.0,6.06
 Doc6853112,dstaley,sid503,San Jose,CA,US,True,0,6.0,6.0,100.0
-Doc6900882,sgavaskar,sid508,Sunnyvale,CA,US,True,0,68.0,4.0,5.88
-Doc6900882,ktokuyama,sid802,Funabashi-shi,Chiba-ken,JP,True,0,68.0,4.0,5.88
+Doc6900882,sgavaskar,sid508,Sunnyvale,CA,US,True,1,68.0,4.0,5.88
+Doc6900882,ktokuyama,sid802,Funabashi-shi,Chiba-ken,JP,True,1,68.0,4.0,5.88
 Doc6915905,ktokuyama,sid802,Funabashi-shi,Chiba-ken,JP,True,0,6.0,6.0,100.0
-Doc6972453,Samuel Patric,ACM_44110,Bangalore,Karnataka,IN,True,0,71.0,2.0,2.82
-Doc6972434,Samuel Patric,ACM_44110,Bangalore,Karnataka,IN,True,0,71.0,3.0,4.23
-Doc6972453,Tom milton,ACM_44106,Bangalore,Karnataka,IN,True,0,71.0,2.0,2.82
+Doc6972453,Samuel Patric,ACM_44110,Bangalore,Karnataka,IN,True,1,71.0,2.0,2.82
+Doc6972434,Samuel Patric,ACM_44110,Bangalore,Karnataka,IN,True,1,71.0,3.0,4.23
+Doc6972453,Tom milton,ACM_44106,Bangalore,Karnataka,IN,True,1,71.0,2.0,2.82
 Doc6998796,Tom milton,ACM_44106,Bangalore,Karnataka,IN,True,1,68.0,2.0,2.94
 Doc6999613,fsuser1,ACM_44114,Bangalore,Karnataka,IN,True,1,6.0,5.0,83.33
 Doc7001865,fsuser1,ACM_44114,Bangalore,Karnataka,IN,True,1,6.0,6.0,100.0
